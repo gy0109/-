@@ -20,6 +20,7 @@ class BaiduFanYi(object):
         return requests.post(self.url, headers=self.headers, data=translate_data).content.decode()
 
     def parse_data(self, data):
+        print(data)
         dict_data = json.loads(data)
         result = dict_data['trans'][0]['result'][0][1]
         print('翻译的结果是%s' % result)
