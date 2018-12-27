@@ -1,4 +1,3 @@
-from queue import Queue
 from multiprocessing import Process
 from multiprocessing import JoinableQueue as Queue
 import requests
@@ -25,6 +24,8 @@ class QiuShiSplier(object):
     def send_request(self):
         while True:
             url = self.url_queue.get().content.decode()
+            time.sleep(2)
+            print(url)
             proxy_list = [
                 {"http": '111.155.116.229:8123'},
                 {"http": '61.135.217.7:80'},
