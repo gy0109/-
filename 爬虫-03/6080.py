@@ -4,13 +4,18 @@ import random
 
 from bs4 import BeautifulSoup as bs
 """
-爬虫目标: 爬取网站所有的电影跳转url   网站主url+a href进行拼接
+爬虫目标: 爬取网站所有的电影跳转url   网站主url+a href进行拼接  
+第二部分： 完成爬取所有num.html的页面  并加载播放url    
+第三部分： 分页部分的爬取   与爬取合并 （识别最大页数）  +第二部分  分类   +线进协程池
+第四部分： 数据筛选清理 
+第五部分： 登陆和注册播放   --- 34.html是vip专区
 """
 
 
 class WebUrl(object):
     def __init__(self):
         self.base_url = 'http://www.px6080.com/whole/{}.html'       # 11.html是喜剧片
+        self.page_url = 'http://www.px6080.com/whole/{}_______0_addtime_{}.html'
         self.USER_AGENT_LIST = [
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",
@@ -39,17 +44,27 @@ class WebUrl(object):
             url_list.append(self.base_url.format(i))
         return url_list
 
+    def joint_page__url(self):
+        url_list = []
+        for i in range(1, 36):   # 页面到27
+            for j in range(1, 26):
+                url_list.append(self.page_url.format(i, j))
+            # with open('html/url_list', 'w', encoding='utf-8')as f:
+            #     for url in url_list:
+            #         f.write(url + '\r\n')
+        return url_list
+
     def send_request(self):
         response_list = []
         proxy = random.choice(self.proxy_list)  # 随机的代理
-        for url in self.joint_url():
+        for url in self.joint_page__url():
             response_list.append(requests.get(url, headers={"User-Agent": random.choice(self.USER_AGENT_LIST)}, proxies=proxy).content.decode())
         # response = requests.get(self.base_url, headers={"User-Agent": random.choice(self.USER_AGENT_LIST)}, proxies=proxy).content.decode()
         print(response_list, '----------------------')
         return response_list
 
     def save_data(self, data):
-        with open('html/网站url_02.txt', 'a', encoding='utf-8') as f:
+        with open('html/网站url_04_分页.txt', 'a', encoding='utf-8') as f:
             f.write(data)
 
     def parse_data(self, data):
