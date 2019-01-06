@@ -31,10 +31,10 @@ def base_use_bs4():
     # print(soup.select("a[class='sister']"))   # 属性选择器
     # print(soup.select('a[href="http://example.com/elsie"]'))    # 属性选择器
 
-    print(soup.select('title'))[0].get_text()   # 获取文本内容
-
-    for title in soup.select('title'):
-        print(title.get_text())
+    # print(soup.select('title'))[0].get_text()   # 获取文本内容
+    #
+    # for title in soup.select('title'):
+    #     print(title.get_text())
 
     print(soup.select('a')[0].get('href'))    # 获取属性  get()方法
 
