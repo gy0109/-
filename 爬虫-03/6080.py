@@ -2,6 +2,8 @@ import time
 import requests
 import random
 
+from multiprocessing import Process
+from multiprocessing import JoinableQueue as Queue
 from bs4 import BeautifulSoup as bs
 """
 爬虫目标: 爬取网站所有的电影跳转url   网站主url+a href进行拼接  
@@ -37,6 +39,10 @@ class WebUrl(object):
             # {'http': '119.101.114.143:9999'},
             # {'http': '119.101.116.134:9999'}
         ]
+        self.count = 0
+        self.url_queue = Queue()
+        self.html_queue = Queue()
+        self.content_list_queue = Queue()
 
     def joint_url(self):
         url_list = []
@@ -47,8 +53,9 @@ class WebUrl(object):
     def joint_page__url(self):
         url_list = []
         for i in range(1, 36):   # 页面到27
-            for j in range(1, 26):
-                url_list.append(self.page_url.format(i, j))
+            for j in range(1, 5):
+                self.url_queue.put(self.page_url.format(i, j))
+                # url_list.append(self.page_url.format(i, j))
             # with open('html/url_list', 'w', encoding='utf-8')as f:
             #     for url in url_list:
             #         f.write(url + '\r\n')
@@ -57,14 +64,14 @@ class WebUrl(object):
     def send_request(self):
         response_list = []
         proxy = random.choice(self.proxy_list)  # 随机的代理
-        for url in self.joint_page__url():
+        for url in self.joint_url():
             response_list.append(requests.get(url, headers={"User-Agent": random.choice(self.USER_AGENT_LIST)}, proxies=proxy).content.decode())
         # response = requests.get(self.base_url, headers={"User-Agent": random.choice(self.USER_AGENT_LIST)}, proxies=proxy).content.decode()
         print(response_list, '----------------------')
         return response_list
 
     def save_data(self, data):
-        with open('html/网站url_04_分页.txt', 'a', encoding='utf-8') as f:
+        with open('html/网站url_05_分页.txt', 'a', encoding='utf-8') as f:
             f.write(data)
 
     def parse_data(self, data):
@@ -75,6 +82,7 @@ class WebUrl(object):
         num = 0
         # 解析数据  使用bs4
         soup = bs(data, 'html5lib')
+        print('=====', soup, '================')
         # soup_list = soup.select('.movielist ul li a')
         soup_list = soup.select('.col-md-1-5 a')
         for i in soup_list:
@@ -86,7 +94,7 @@ class WebUrl(object):
                 if index <= len(href_str_list) - 1:
                     href_list.append(href_str_list[index - 1].split('/', 2)[2])
                     content_str = title_str + '-----' + 'http://www.px6080.com' + href_str_list[index - 2] + '      播放页面：' + 'http://www.px6080.com/play/' + href_list[num].split('.')[0] + '/0/0.html' + '\r\n'
-                    print(content_str)
+                    # print(content_str)
                     content_list.append(content_str)
                     num += 1
                 index += 1
