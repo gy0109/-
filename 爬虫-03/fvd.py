@@ -1,7 +1,0 @@
-print(9 % 3)
-print(9 % 4)
-print(10 % 3)
-print(12 % 3)
-print(0 % 1)
-print(3 % 5)
-print(1 % 2)

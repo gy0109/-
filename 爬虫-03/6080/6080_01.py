@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup as bs
 class WebUrl(object):
     def __init__(self):
         self.base_url = 'http://www.px6080.com/whole/{}.html'       # 11.html是喜剧片
-        self.page_url = 'http://www.px6080.com/whole/{}_______0_addtime_{}.html'
+        self.page_url = 'http://www.px6080.com/whole/1_______0_addtime_{}.html'
         self.USER_AGENT_LIST = [
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",
@@ -52,9 +52,10 @@ class WebUrl(object):
 
     def joint_page__url(self):
         # url_list = []
-        for i in range(1, 36):   # 页面到27
-            for j in range(1, 26):
-                self.url_queue.put(self.page_url.format(i, j))
+        for i in range(1, 854):   # 页面到27
+        # for j in range(1, 40):
+            self.url_queue.put(self.page_url.format(i))
+        print(self.url_queue)
                 # url_list.append(self.page_url.format(i, j))
             # with open('html/url_list', 'w', encoding='utf-8')as f:
             #     for url in url_list:
@@ -68,12 +69,10 @@ class WebUrl(object):
             print(url)
             # response_list.append(requests.get(url, headers={"User-Agent": random.choice(self.USER_AGENT_LIST)}, proxies=proxy).content.decode())
             response = requests.get(url, headers={"User-Agent": random.choice(self.USER_AGENT_LIST)}, proxies=proxy)
-            print(response, '----------------------')
+            print('----------------------', response)
             if response.status_code == 200:
                 # 响应对象 入队列
                 self.html_queue.put(response)
-            else:
-                # 如果不成功 二次 丢会队列
                 self.url_queue.put(url)
 
             # url队列计数器 减一
@@ -93,8 +92,7 @@ class WebUrl(object):
         href_list = []
         num = 0
         while True:
-            data = self.html_queue.get()
-
+            data = self.html_queue.get().content.decode()
             # 解析数据  使用bs4
             soup = bs(data, 'html5lib')
             # soup_list = soup.select('.movielist ul li a')
@@ -135,7 +133,7 @@ class WebUrl(object):
         th_list.append(th_url)
 
         # 2.fa送请求 并发数
-        for i in range(2):
+        for i in range(10):
             th_request = Process(target=self.send_request)
             th_list.append(th_request)
 
